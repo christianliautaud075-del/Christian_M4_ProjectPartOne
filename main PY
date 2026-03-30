@@ -1,1 +1,192 @@
-print("HEllo World")
+from inventory_data import create_inventory
+
+
+def grocery_practice():
+    grocery_inventory = ["milk", "eggs", "bread", "cheese", "yogurt", "rice"]
+
+    print("Step 1: Initialize the Grocery Inventory")
+    print(grocery_inventory)
+
+    grocery_inventory.append("apples")
+    print("\nStep 2: Add Items to the Inventory")
+    print(grocery_inventory)
+
+    grocery_inventory.remove("eggs")
+    print("\nStep 3: Remove Items From the Inventory")
+    print(grocery_inventory)
+
+
+def menu():
+    print("\nInventory Menu")
+    print("1. Show inventory")
+    print("2. Search for an item")
+    print("3. Add an item")
+    print("4. Update an item")
+    print("5. Exit")
+
+
+def show_inventory(inventory):
+    print("\nCurrent Inventory:")
+    for item in inventory:
+        print(
+            item,
+            "- Category:", inventory[item]["category"],
+            "| Quantity:", inventory[item]["quantity"],
+            "| Price: $" + str(format(inventory[item]["price"], ".2f"))
+        )
+
+
+def show_item(item, details):
+    print("\nItem found:")
+    print("Name:", item)
+    print("Category:", details["category"])
+    print("Quantity:", details["quantity"])
+    print("Price: $" + str(format(details["price"], ".2f")))
+
+
+def find_item(inventory, name):
+    for item in inventory:
+        if item.lower() == name.lower():
+            return item
+    return None
+
+
+def add_item(inventory):
+    print("\nAdd Item")
+    name = input("Enter item name: ").strip()
+
+    if name == "":
+        print("Item name cannot be blank.")
+        return
+
+    if find_item(inventory, name):
+        print("That item is already in the inventory.")
+        return
+
+    category = input("Enter category: ").strip()
+    if category == "":
+        print("Category cannot be blank.")
+        return
+
+    try:
+        quantity = int(input("Enter quantity: "))
+        if quantity < 0:
+            print("Quantity cannot be negative.")
+            return
+    except ValueError:
+        print("Please enter a whole number for quantity.")
+        return
+
+    try:
+        price = float(input("Enter price: "))
+        if price < 0:
+            print("Price cannot be negative.")
+            return
+    except ValueError:
+        print("Please enter a valid number for price.")
+        return
+
+    inventory[name] = {
+        "category": category,
+        "quantity": quantity,
+        "price": price
+    }
+
+    print(name, "was added.")
+
+
+def search_item(inventory):
+    print("\nSearch Item")
+    name = input("Enter item name: ").strip()
+
+    if name == "":
+        print("You did not type anything.")
+        return
+
+    item_name = find_item(inventory, name)
+
+    if item_name is None:
+        print("Item not found.")
+        return
+
+    show_item(item_name, inventory[item_name])
+
+    answer = input("Do you want to update this item? (yes/no): ").lower()
+
+    if answer == "yes" or answer == "y":
+        update_item(inventory, item_name)
+    elif answer == "no" or answer == "n":
+        print("No changes were made.")
+    else:
+        print("Invalid choice.")
+
+
+def update_item(inventory, name=None):
+    print("\nUpdate Item")
+
+    if name is None:
+        name = input("Enter item name to update: ").strip()
+
+    item_name = find_item(inventory, name)
+
+    if item_name is None:
+        print("Item not found.")
+        return
+
+    show_item(item_name, inventory[item_name])
+
+    new_category = input("Enter new category or press Enter to keep the same: ").strip()
+    if new_category != "":
+        inventory[item_name]["category"] = new_category
+
+    new_quantity = input("Enter new quantity or press Enter to keep the same: ").strip()
+    if new_quantity != "":
+        try:
+            new_quantity = int(new_quantity)
+            if new_quantity >= 0:
+                inventory[item_name]["quantity"] = new_quantity
+            else:
+                print("Quantity cannot be negative.")
+        except ValueError:
+            print("Invalid quantity. Old quantity stayed the same.")
+
+    new_price = input("Enter new price or press Enter to keep the same: ").strip()
+    if new_price != "":
+        try:
+            new_price = float(new_price)
+            if new_price >= 0:
+                inventory[item_name]["price"] = new_price
+            else:
+                print("Price cannot be negative.")
+        except ValueError:
+            print("Invalid price. Old price stayed the same.")
+
+    print(item_name, "was updated.")
+
+
+def run_program():
+    inventory = create_inventory()
+
+    print("\nThis program lets you manage the inventory.")
+
+    while True:
+        menu()
+        choice = input("Choose 1-5: ")
+
+        if choice == "1":
+            show_inventory(inventory)
+        elif choice == "2":
+            search_item(inventory)
+        elif choice == "3":
+            add_item(inventory)
+        elif choice == "4":
+            update_item(inventory)
+        elif choice == "5":
+            print("Program ended.")
+            break
+        else:
+            print("Please enter a number from 1 to 5.")
+
+
+grocery_practice()
+run_program()
